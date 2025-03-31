@@ -22,21 +22,21 @@ class GeoJsonNoVanish extends L.GeoJSON {
   _onZoomEnd() {
     // todo: name
     // todo: possible optimizations: zoomOut = skip already compressed objects (and vice versa)
-    const is_max_zoom = this._map.getZoom() == this._map.getMaxZoom();
+    var is_max_zoom = this._map.getZoom() == this._map.getMaxZoom();
     this.eachLayer(function (o) {
       if (!o.feature || !o.feature.geometry) return; // skip invalid layers
       if (o.feature.geometry.type == "Point" && !o.obj) return; // skip node features
-      const compress =
+      var compress =
         this.options.compress &&
         this.options.compress(o.obj ? o.obj.feature : o.feature);
-      const crs = this._map.options.crs;
+      var crs = this._map.options.crs;
       if (o.obj) {
         if (compress === "point") return;
         // already compressed feature
-        const bounds = o.obj.getBounds();
-        const p1 = crs.latLngToPoint(bounds.getSouthWest(), o._map.getZoom());
-        const p2 = crs.latLngToPoint(bounds.getNorthEast(), o._map.getZoom());
-        const d = Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2);
+        var bounds = o.obj.getBounds();
+        var p1 = crs.latLngToPoint(bounds.getSouthWest(), o._map.getZoom());
+        var p2 = crs.latLngToPoint(bounds.getNorthEast(), o._map.getZoom());
+        var d = Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2);
         if (d > Math.pow(this.threshold, 2) || is_max_zoom) {
           delete o.obj.placeholder;
           this.removeLayer(o);
@@ -49,10 +49,10 @@ class GeoJsonNoVanish extends L.GeoJSON {
       }
       if (is_max_zoom && compress !== "point") return; // do not compress objects at max zoom, except if mapcss says always to render as points
       if (compress === "native") return; // do not compress if mapcss specifies not to
-      const bounds = o.getBounds();
-      const p1 = crs.latLngToPoint(bounds.getSouthWest(), o._map.getZoom());
-      const p2 = crs.latLngToPoint(bounds.getNorthEast(), o._map.getZoom());
-      const d = Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2);
+      var bounds = o.getBounds();
+      var p1 = crs.latLngToPoint(bounds.getSouthWest(), o._map.getZoom());
+      var p2 = crs.latLngToPoint(bounds.getNorthEast(), o._map.getZoom());
+      var d = Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2);
       if (d > Math.pow(this.threshold, 2) && compress !== "point") return;
       let center;
       if (d <= Math.pow(this.threshold, 2)) {
@@ -60,13 +60,13 @@ class GeoJsonNoVanish extends L.GeoJSON {
       } else {
         center = o.getCenter();
       }
-      const f = L.extend({}, o.feature);
+      var f = L.extend({}, o.feature);
       f.is_placeholder = true;
       f.geometry = {
         type: "Point",
         coordinates: [center.lng, center.lat]
       };
-      const c = L.GeoJSON.geometryToLayer(f, this.options);
+      var c = L.GeoJSON.geometryToLayer(f, this.options);
       o.placeholder = c;
       c.feature = f;
       c.obj = o;
