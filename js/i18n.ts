@@ -23,8 +23,8 @@ function browser_locale() {
   return lang;
 }
 
-const default_lng = "en";
-const languages = {
+var default_lng = "en";
+var languages = {
   // translations found in locale/*.json
   ast: "Asturian",
   en: "English",
@@ -66,7 +66,7 @@ const languages = {
 27;
 
 type Language = keyof typeof languages;
-const supported_lngs: Language[] = _.keys(languages);
+var supported_lngs: Language[] = _.keys(languages);
 
 export default class i18n {
   // translated texts
@@ -135,11 +135,11 @@ export default class i18n {
     $(element || ".t").each((nr, element) => {
       $(element || ".t").each((nr, element) => {
         // get translation term(s)
-        const terms = $(element).attr("data-t")?.split(";") || [];
-        for (const term of terms) {
-          const [, , what, key] = term.match(/^(\[(.*)\])?(.*)$/);
+        var terms = $(element).attr("data-t")?.split(";") || [];
+        for (var term of terms) {
+          var [, , what, key] = term.match(/^(\[(.*)\])?(.*)$/);
           let val = this.t(key);
-          const shortcut = $(element).attr("data-shortcut");
+          var shortcut = $(element).attr("data-shortcut");
           if (shortcut) val += ` [${shortcut}]`;
           if (what === "html") {
             $(element).html(val);
