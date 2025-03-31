@@ -23,7 +23,7 @@ function lineEquation(pt1, pt2) {
     return pt1.y === pt2.y ? null : {x: pt1.x};
   }
 
-  var a = (pt2.y - pt1.y) / (pt2.x - pt1.x);
+  const a = (pt2.y - pt1.y) / (pt2.x - pt1.x);
   return {
     a: a,
     b: pt1.y - a * pt1.x
@@ -35,8 +35,8 @@ Return the intersection point of two lines defined by two points each
 Return null when there's no unique intersection
 */
 function intersection(l1a, l1b, l2a, l2b) {
-  var line1 = lineEquation(l1a, l1b);
-  var line2 = lineEquation(l2a, l2b);
+  const line1 = lineEquation(l1a, l1b);
+  const line2 = lineEquation(l2a, l2b);
 
   if (line1 === null || line2 === null) {
     return null;
@@ -64,7 +64,7 @@ function intersection(l1a, l1b, l2a, l2b) {
     return null;
   }
 
-  var x = (line2.b - line1.b) / (line1.a - line2.a);
+  const x = (line2.b - line1.b) / (line1.a - line2.a);
   return {
     x: x,
     y: line1.a * x + line1.b
@@ -78,9 +78,9 @@ function translatePoint(pt, dist, heading) {
   };
 }
 
-var PolylineOffset = {
+const PolylineOffset = {
   offsetPointLine: function (points, distance) {
-    var offsetSegments = [];
+    const offsetSegments = [];
 
     forEachPair(
       points,
@@ -90,8 +90,8 @@ var PolylineOffset = {
         }
 
         // angles in (-PI, PI]
-        var segmentAngle = Math.atan2(a.y - b.y, a.x - b.x);
-        var offsetAngle = segmentAngle - Math.PI / 2;
+        const segmentAngle = Math.atan2(a.y - b.y, a.x - b.x);
+        const offsetAngle = segmentAngle - Math.PI / 2;
 
         offsetSegments.push({
           offsetAngle: offsetAngle,
@@ -108,7 +108,7 @@ var PolylineOffset = {
   },
 
   offsetPoints: function (pts, options) {
-    var offsetSegments = this.offsetPointLine(
+    const offsetSegments = this.offsetPointLine(
       L.LineUtil.simplify(pts, options.smoothFactor),
       options.offset
     );
@@ -125,8 +125,8 @@ var PolylineOffset = {
 
   joinLineSegments: function (segments, offset) {
     let joinedPoints = [];
-    var first = segments[0];
-    var last = segments[segments.length - 1];
+    const first = segments[0];
+    const last = segments[segments.length - 1];
 
     if (first && last) {
       joinedPoints.push(first.offset[0]);
@@ -150,8 +150,8 @@ var PolylineOffset = {
   },
 
   getSignedAngle: function (s1, s2) {
-    var a = this.segmentAsVector(s1);
-    var b = this.segmentAsVector(s2);
+    const a = this.segmentAsVector(s1);
+    const b = this.segmentAsVector(s2);
     return Math.atan2(a.x * b.y - a.y * b.x, a.x * b.x + a.y * b.y);
   },
 
@@ -165,7 +165,7 @@ var PolylineOffset = {
       return [s1.offset[1]];
     }
 
-    var signedAngle = this.getSignedAngle(s1.offset, s2.offset);
+    const signedAngle = this.getSignedAngle(s1.offset, s2.offset);
     // for inner angles, just find the offset segments intersection
     if (
       signedAngle * distance > 0 &&
@@ -179,17 +179,17 @@ var PolylineOffset = {
     }
 
     // draws a circular arc with R = offset distance, C = original meeting point
-    var points = [];
-    var center = s1.original[1];
+    const points = [];
+    const center = s1.original[1];
     // ensure angles go in the anti-clockwise direction
-    var rightOffset = distance > 0;
-    var startAngle = rightOffset ? s2.offsetAngle : s1.offsetAngle;
+    const rightOffset = distance > 0;
+    const startAngle = rightOffset ? s2.offsetAngle : s1.offsetAngle;
     let endAngle = rightOffset ? s1.offsetAngle : s2.offsetAngle;
     // and that the end angle is bigger than the start angle
     if (endAngle < startAngle) {
       endAngle += Math.PI * 2;
     }
-    var step = Math.PI / 8;
+    const step = Math.PI / 8;
     for (let alpha = startAngle; alpha < endAngle; alpha += step) {
       points.push(translatePoint(center, distance, alpha));
     }
@@ -202,12 +202,12 @@ var PolylineOffset = {
 // Modify the L.Polyline class by overwriting the projection function
 L.Polyline.include({
   _projectLatlngs: function (latlngs, result, projectedBounds) {
-    var isFlat = latlngs.length > 0 && latlngs[0] instanceof L.LatLng;
+    const isFlat = latlngs.length > 0 && latlngs[0] instanceof L.LatLng;
 
     if (isFlat) {
       let ring = latlngs.map(
         L.bind(function (ll) {
-          var point = this._map.latLngToLayerPoint(ll);
+          const point = this._map.latLngToLayerPoint(ll);
           if (projectedBounds) {
             projectedBounds.extend(point);
           }
