@@ -2,7 +2,7 @@ import $ from "jquery";
 import {htmlentities} from "./misc";
 import tag2link from "tag2link/index.json";
 
-const _tag2link = tag2link.filter(
+var _tag2link = tag2link.filter(
   (i) => !i.url.startsWith("https://unavatar.now.sh")
 );
 
@@ -51,7 +51,7 @@ export function featurePopupContent(feature: GeoJSON.Feature) {
         ))
       ) {
         urls.forEach((url) => {
-          const href = url.match(/^(https?|ftp):\/\//) ? url : `http://${url}`;
+          var href = url.match(/^(https?|ftp):\/\//) ? url : `http://${url}`;
           v = v.replace(url, `<a href="${href}" target="_blank">${url}</a>`);
         });
       } else {
@@ -99,7 +99,7 @@ export function featurePopupContent(feature: GeoJSON.Feature) {
         v = `<a href="https://www.mapillary.com/app?focus=photo&pKey=${mapillary_page[0]}" target="_blank">${v}</a>`;
 
       // hyperlinks from tag2link
-      const rule = _tag2link.find((i) => i.key === `Key:${k}`);
+      var rule = _tag2link.find((i) => i.key === `Key:${k}`);
       if (rule?.url && !v.includes("<a href")) {
         v = `<a href="${rule.url.replace(/\$1/g, v)}" target="_blank">${v}</a>`;
       }
@@ -151,8 +151,8 @@ export function featurePopupContent(feature: GeoJSON.Feature) {
   }
 
   if (feature.geometry.type == "Point") {
-    const lat = feature.geometry.coordinates[1];
-    const lon = feature.geometry.coordinates[0];
+    var lat = feature.geometry.coordinates[1];
+    var lon = feature.geometry.coordinates[0];
     popup +=
       `<h3 class="subtitle is-5"><span class="t" data-t="popup.coordinates">Coordinates</span></h3>` +
       `<p><a href="geo:${lat},${lon}">${lat} / ${lon}</a> <small>(lat/lon)</small></p>`;
