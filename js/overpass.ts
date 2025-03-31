@@ -69,7 +69,7 @@ class Overpass {
     user_mapcss: string
   ) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const overpass = this;
+    var overpass = this;
     server = server || configs.defaultServer;
     // 1. get overpass json data
     if (query_lang == "xml") {
@@ -102,7 +102,7 @@ class Overpass {
       let data_amount = jqXHR.responseText.length;
       let data_txt;
       // round amount of data
-      const scale = Math.floor(Math.log(data_amount) / Math.log(10));
+      var scale = Math.floor(Math.log(data_amount) / Math.log(10));
       data_amount =
         Math.round(data_amount / Math.pow(10, scale)) * Math.pow(10, scale);
       if (data_amount < 1000) data_txt = `${data_amount} bytes`;
@@ -123,7 +123,7 @@ class Overpass {
           // different cases of loaded data: json data, xml data or error message?
           let data_mode = null;
           let geojson;
-          const stats = {} as {
+          var stats = {} as {
             data: {
               nodes: number;
               ways: number;
@@ -219,8 +219,8 @@ class Overpass {
                 overpass.fire("onQueryError", errmsg);
                 data_mode = "error";
                 // parse errors and highlight error lines
-                const errlines = errmsg.match(/line \d+:/g) || [];
-                for (const errline of errlines) {
+                var errlines = errmsg.match(/line \d+:/g) || [];
+                for (var errline of errlines) {
                   overpass.fire(
                     "onQueryErrorLine",
                     1 * errline.match(/\d+/)[0]
@@ -285,7 +285,7 @@ class Overpass {
             overpass.rerender = function (userMapCSS) {
               // test user supplied mapcss stylesheet
               try {
-                const dummy_mapcss = new styleparser.RuleSet();
+                var dummy_mapcss = new styleparser.RuleSet();
                 dummy_mapcss.parseCSS(userMapCSS);
                 try {
                   dummy_mapcss.getStyles(
@@ -307,7 +307,7 @@ class Overpass {
                 userMapCSS = "";
                 overpass.fire("onStyleError", `<p>${e.message}</p>`);
               }
-              const mapcss = new styleparser.RuleSet();
+              var mapcss = new styleparser.RuleSet();
               mapcss.parseCSS(
                 `` +
                   `node, way, relation {color:black; fill-color:black; opacity:1; fill-opacity: 1; width:10;} \n` +
@@ -337,13 +337,13 @@ class Overpass {
                     props &&
                     props.tags &&
                     (function (o) {
-                      for (const k in o)
+                      for (var k in o)
                         if (k != "created_by" && k != "source") return true;
                       return false;
                     })(props.tags)
                   );
                 }
-                const s = mapcss.getStyles(
+                var s = mapcss.getStyles(
                   {
                     isSubject(subject) {
                       switch (subject) {
@@ -402,9 +402,9 @@ class Overpass {
                       : {":untagged": true},
                     highlight ? {":active": true} : {},
                     (function (tags, meta, id) {
-                      const res = {"@id": id};
-                      for (const key in meta) res[`@${key}`] = meta[key];
-                      for (const key in tags)
+                      var res = {"@id": id};
+                      for (var key in meta) res[`@${key}`] = meta[key];
+                      for (var key in tags)
                         res[key.replace(/^@/, "@@")] = tags[key];
                       return res;
                     })(
@@ -426,14 +426,14 @@ class Overpass {
                 baseLayerOptions: {
                   threshold: 9 * Math.sqrt(2) * 2,
                   compress(feature) {
-                    const render = this.style(feature).render;
+                    var render = this.style(feature).render;
                     if (render === "auto" && settings.disable_poiomatic)
                       return "native";
                     else return render;
                   },
                   style(feature, highlight) {
-                    const stl: L.PathOptions = {};
-                    const s = get_feature_style(feature, highlight);
+                    var stl: L.PathOptions = {};
+                    var s = get_feature_style(feature, highlight);
                     // apply mapcss styles
                     function get_property(styles, properties) {
                       for (let i = properties.length - 1; i >= 0; i--)
@@ -518,12 +518,12 @@ class Overpass {
                     return stl;
                   },
                   pointToLayer(feature, latlng) {
-                    const s = get_feature_style(feature);
-                    const stl = s.pointStyles["default"] || {};
+                    var s = get_feature_style(feature);
+                    var stl = s.pointStyles["default"] || {};
                     let marker;
                     if (stl["icon_image"]) {
                       // return image marker
-                      const iconUrl = stl["icon_image"].match(
+                      var iconUrl = stl["icon_image"].match(
                         /^url\(['"](.*)['"]\)$/
                       )[1];
                       let iconSize;
@@ -531,7 +531,7 @@ class Overpass {
                         iconSize = [stl["icon_width"], stl["icon_width"]];
                       if (stl["icon_height"] && iconSize)
                         iconSize[1] = stl["icon_height"];
-                      const icon = new L.Icon({
+                      var icon = new L.Icon({
                         iconUrl: iconUrl,
                         iconSize: iconSize
                         // todo: anchor, shadow?, ...
@@ -547,7 +547,7 @@ class Overpass {
                       });
                     } else {
                       // return circle marker
-                      const r = stl["symbol_size"] || 9;
+                      var r = stl["symbol_size"] || 9;
                       marker = new L.CircleMarker(latlng, {
                         radius: r
                       });
@@ -555,14 +555,14 @@ class Overpass {
                     return marker;
                   },
                   onEachFeature(feature, layer) {
-                    const s = get_feature_style(feature, false);
-                    const stl = s.textStyles["default"] || {};
+                    var s = get_feature_style(feature, false);
+                    var stl = s.textStyles["default"] || {};
                     let text = stl["text"];
                     if (
                       (text && stl.evals["text"]) ||
                       (text && (text = feature.properties.tags[text]))
                     ) {
-                      const tooltip = new L.Tooltip({
+                      var tooltip = new L.Tooltip({
                         direction: stl["text_position"],
                         className: "text-tooltip",
                         permanent: true
@@ -580,7 +580,7 @@ class Overpass {
                       layer.bindTooltip(tooltip);
                     }
                     layer.on("click", function (e) {
-                      const popup = featurePopupContent(feature);
+                      var popup = featurePopupContent(feature);
                       let latlng;
                       // node-ish features (circles, markers, icons, placeholders)
                       if (typeof e.target.getLatLng == "function")
@@ -590,7 +590,7 @@ class Overpass {
                       else if (e.target.placeholder)
                         latlng = e.target.placeholder._latlng;
                       else latlng = e.latlng; // all other (lines, polygons, multipolygons)
-                      const p = L.popup({maxHeight: 600}, this)
+                      var p = L.popup({maxHeight: 600}, this)
                         .setLatLng(latlng)
                         .setContent(popup);
                       p.layer = layer;
@@ -613,7 +613,7 @@ class Overpass {
                     lines: 0,
                     pois: 0
                   };
-                  for (const feature of geojson.features)
+                  for (var feature of geojson.features)
                     switch (feature.geometry.type) {
                       case "Polygon":
                       case "MultiPolygon":
@@ -772,6 +772,6 @@ class Overpass {
   }
 }
 
-const overpass = new Overpass();
+var overpass = new Overpass();
 
 export default overpass;
