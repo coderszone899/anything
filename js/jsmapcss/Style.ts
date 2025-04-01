@@ -1,6 +1,6 @@
 import evalparser from "./eval.pegjs";
 
-const styleparser = {};
+var styleparser = {};
 styleparser.Style = function () {
   this.__init__();
 };
@@ -27,7 +27,7 @@ styleparser.Style.prototype = {
   },
 
   mergeWith(additional) {
-    for (const prop in this.properties) {
+    for (var prop in this.properties) {
       if (additional[prop]) {
         this[prop] = additional[prop];
       }
@@ -55,9 +55,9 @@ styleparser.Style.prototype = {
 
   runEvals(tags) {
     // helper object for eval() properties
-    for (const k in this.evals) {
+    for (var k in this.evals) {
       try {
-        const evaluated = evalparser.parse(this.evals[k], {
+        var evaluated = evalparser.parse(this.evals[k], {
           osm_tag: (t) => tags[t] || ""
         });
         this.setPropertyFromString(k, evaluated);
@@ -69,7 +69,7 @@ styleparser.Style.prototype = {
 
   toString() {
     let str = "";
-    for (const k in this.properties) {
+    for (var k in this.properties) {
       // eslint-disable-next-line no-prototype-builtins
       if (this.hasOwnProperty(k)) {
         str += `${k}=${this[k]}; `;
@@ -79,7 +79,7 @@ styleparser.Style.prototype = {
   }
 };
 styleparser.inherit_from_Style = function (target) {
-  for (const p in styleparser.Style.prototype)
+  for (var p in styleparser.Style.prototype)
     if (target[p] === undefined) target[p] = styleparser.Style.prototype[p];
 };
 
