@@ -9,10 +9,10 @@ function map2bbox(lang) {
   if (!(ide.map.bboxfilter && ide.map.bboxfilter.isEnabled()))
     bbox = ide.map.getBounds();
   else bbox = ide.map.bboxfilter.getBounds();
-  const lat1 = Math.min(Math.max(bbox.getSouthWest().lat, -90), 90);
-  const lat2 = Math.min(Math.max(bbox.getNorthEast().lat, -90), 90);
-  const lng1 = Math.min(Math.max(bbox.getSouthWest().lng, -180), 180);
-  const lng2 = Math.min(Math.max(bbox.getNorthEast().lng, -180), 180);
+  var lat1 = Math.min(Math.max(bbox.getSouthWest().lat, -90), 90);
+  var lat2 = Math.min(Math.max(bbox.getNorthEast().lat, -90), 90);
+  var lng1 = Math.min(Math.max(bbox.getSouthWest().lng, -180), 180);
+  var lng2 = Math.min(Math.max(bbox.getNorthEast().lng, -180), 180);
   if (lang == "OverpassQL") return `${lat1},${lng1},${lat2},${lng2}`;
   else if (lang == "xml")
     return `s="${lat1}" w="${lng1}" n="${lat2}" e="${lng2}"`;
@@ -20,14 +20,14 @@ function map2bbox(lang) {
 
 // returns the current visible map center as a coord-query
 function map2coord(lang) {
-  const center = ide.map.getCenter();
+  var center = ide.map.getCenter();
   if (lang == "OverpassQL") return `${center.lat},${center.lng}`;
   else if (lang == "xml") return `lat="${center.lat}" lon="${center.lng}"`;
 }
 
 // converts relative time to ISO time string
 function relativeTime(instr, callback) {
-  const now = Date.now();
+  var now = Date.now();
   // very basic differential date
   if (instr == "") instr = "0 seconds";
   instr = instr
@@ -39,7 +39,7 @@ function relativeTime(instr, callback) {
     callback(""); // todo: throw an error. do not silently fail
     return;
   }
-  const count = parseInt(instr[1]);
+  var count = parseInt(instr[1]);
   let interval;
   switch (instr[2]) {
     case "second":
@@ -72,13 +72,13 @@ function relativeTime(instr, callback) {
       interval = 31536000;
       break;
   }
-  const date = now - count * interval * 1000;
+  var date = now - count * interval * 1000;
   callback(new Date(date).toISOString());
 }
 
 // geocoded values (object/area ids, coords, bbox)
 function geocodeId(instr, callback) {
-  const lang = ide.getQueryLang();
+  var lang = ide.getQueryLang();
   function filter(n) {
     return n.osm_type && n.osm_id;
   }
@@ -90,7 +90,7 @@ function geocodeId(instr, callback) {
   });
 }
 function geocodeArea(instr, callback) {
-  const lang = ide.getQueryLang();
+  var lang = ide.getQueryLang();
   function filter(n) {
     return n.osm_type && n.osm_id && n.osm_type !== "node";
   }
@@ -113,13 +113,13 @@ function geocodeArea(instr, callback) {
   });
 }
 function geocodeBbox(instr, callback) {
-  const lang = ide.getQueryLang();
+  var lang = ide.getQueryLang();
   nominatim.getBest(instr, (err, res) => {
     if (err) return ide.onNominatimError(instr, "Bbox");
-    const lat1 = Math.min(Math.max(res.boundingbox[0], -90), 90);
-    const lat2 = Math.min(Math.max(res.boundingbox[1], -90), 90);
-    const lng1 = Math.min(Math.max(res.boundingbox[2], -180), 180);
-    const lng2 = Math.min(Math.max(res.boundingbox[3], -180), 180);
+    var lat1 = Math.min(Math.max(res.boundingbox[0], -90), 90);
+    var lat2 = Math.min(Math.max(res.boundingbox[1], -90), 90);
+    var lng1 = Math.min(Math.max(res.boundingbox[2], -180), 180);
+    var lng2 = Math.min(Math.max(res.boundingbox[3], -180), 180);
     if (lang == "OverpassQL") res = `${lat1},${lng1},${lat2},${lng2}`;
     else if (lang == "xml")
       res = `s="${lat1}" w="${lng1}" n="${lat2}" e="${lng2}"`;
@@ -127,7 +127,7 @@ function geocodeBbox(instr, callback) {
   });
 }
 function geocodeCoords(instr, callback) {
-  const lang = ide.getQueryLang();
+  var lang = ide.getQueryLang();
   nominatim.getBest(instr, (err, res) => {
     if (err) return ide.onNominatimError(instr, "Coords");
     if (lang == "OverpassQL") res = `${res.lat},${res.lon}`;
@@ -141,7 +141,7 @@ export type Shortcut =
   | ((instr: string, callback: (s: string) => void) => void);
 
 export default function shortcuts(): Record<string, Shortcut> {
-  const queryLang = ide.getQueryLang();
+  var queryLang = ide.getQueryLang();
   return {
     bbox: map2bbox(queryLang),
     center: map2coord(queryLang),
