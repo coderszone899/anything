@@ -4,9 +4,9 @@ import $ from "jquery";
 import {Base64} from "./misc";
 
 export default function autorepair(q, lng) {
-  const repair = {};
+  var repair = {};
 
-  const comments = {};
+  var comments = {};
 
   (function init() {
     // replace comments with placeholders
@@ -14,20 +14,20 @@ export default function autorepair(q, lng) {
     let cs, placeholder;
     if (lng == "xml") {
       cs = q.match(/<!--[\s\S]*?-->/g) || [];
-      for (const csi of cs) {
+      for (var csi of cs) {
         placeholder = `<!--${Base64.encode(Math.random().toString())}-->`; //todo: use some kind of checksum or hash maybe?
         q = q.replace(csi, placeholder);
         comments[placeholder] = csi;
       }
     } else {
       cs = q.match(/\/\*[\s\S]*?\*\//g) || []; // multiline comments: /*...*/
-      for (const csi of cs) {
+      for (var csi of cs) {
         placeholder = `/*${Base64.encode(Math.random().toString())}*/`; //todo: use some kind of checksum or hash maybe?
         q = q.replace(csi, placeholder);
         comments[placeholder] = csi;
       }
       cs = q.match(/\/\/[^\n]*/g) || []; // single line comments: //...
-      for (const csi of cs) {
+      for (var csi of cs) {
         placeholder = `/*${Base64.encode(Math.random().toString())}*/`; //todo: use some kind of checksum or hash maybe?
         q = q.replace(csi, placeholder);
         comments[placeholder] = csi;
@@ -37,7 +37,7 @@ export default function autorepair(q, lng) {
 
   repair.getQuery = () => {
     // expand placeholded comments
-    for (const placeholder in comments) {
+    for (var placeholder in comments) {
       q = q.replace(placeholder, comments[placeholder]);
     }
     return q;
@@ -46,11 +46,11 @@ export default function autorepair(q, lng) {
   repair.recurse = () => {
     if (lng == "xml") {
       // do some fancy mixture between regex magic and xml as html parsing :€
-      const prints =
+      var prints =
         q.match(/(\n?[^\S\n]*<print[\s\S]*?(\/>|<\/print>))/g) || [];
       for (let i = 0; i < prints.length; i++) {
-        const ws = prints[i].match(/^\n?(\s*)/)[1]; // amount of whitespace in front of each print statement
-        const from = $("print", $.parseXML(prints[i])).attr("from");
+        var ws = prints[i].match(/^\n?(\s*)/)[1]; // amount of whitespace in front of each print statement
+        var from = $("print", $.parseXML(prints[i])).attr("from");
         let add1, add2, add3;
         if (from) {
           add1 = ` into="${from}"`;
@@ -69,10 +69,10 @@ export default function autorepair(q, lng) {
       for (let i = 0; i < prints.length; i++)
         q = q.replace(`<autorepair>${i}</autorepair>`, prints[i]);
     } else {
-      const outs = q.match(/(\n?[^\S\n]*(\.[^.;]+)?out[^:;"\]]*;)/g) || [];
+      var outs = q.match(/(\n?[^\S\n]*(\.[^.;]+)?out[^:;"\]]*;)/g) || [];
       for (let i = 0; i < outs.length; i++) {
-        const ws = outs[i].match(/^\n?(\s*)/)[0]; // amount of whitespace
-        const from = outs[i].match(/\.([^;.]+?)\s+out/);
+        var ws = outs[i].match(/^\n?(\s*)/)[0]; // amount of whitespace
+        var from = outs[i].match(/\.([^;.]+?)\s+out/);
         let add;
         if (from) add = `(.${from[1]};.${from[1]} >;)->.${from[1]};`;
         else add = "(._;>;);";
@@ -90,21 +90,21 @@ export default function autorepair(q, lng) {
   repair.editors = () => {
     if (lng == "xml") {
       // 1. fix <osm-script output=*
-      const src = q.match(/<osm-script([^>]*)>/);
+      var src = q.match(/<osm-script([^>]*)>/);
       if (src) {
-        const output = $(
+        var output = $(
           "osm-script",
           $.parseXML(`${src[0]}</osm-script>`)
         ).attr("output");
         if (output && output != "xml") {
-          const new_src = src[0].replace(output, "xml");
+          var new_src = src[0].replace(output, "xml");
           q = q.replace(src[0], `${new_src}<!-- fixed by auto repair -->`);
         }
       }
       // 2. fix <print mode=*
-      const prints = q.match(/(<print[\s\S]*?(\/>|<\/print>))/g) || [];
-      for (const print_i of prints) {
-        const print = $("print", $.parseXML(print_i)),
+      var prints = q.match(/(<print[\s\S]*?(\/>|<\/print>))/g) || [];
+      for (var print_i of prints) {
+        var print = $("print", $.parseXML(print_i)),
           mode = print.attr("mode"),
           geometry = print.attr("geometry");
         let add = "";
@@ -116,7 +116,7 @@ export default function autorepair(q, lng) {
         }
         if (geometry && geometry !== "skeleton") {
           print.attr("geometry", null);
-          const out_set = print.attr("from");
+          var out_set = print.attr("from");
           if (!out_set) {
             add = '<union><item/><recurse type="down"/></union>';
           } else {
@@ -132,7 +132,7 @@ export default function autorepair(q, lng) {
       }
     } else {
       // 1. fix [out:*]
-      const out = q.match(/\[\s*out\s*:\s*([^\]\s]+)\s*\]\s*;?/);
+      var out = q.match(/\[\s*out\s*:\s*([^\]\s]+)\s*\]\s*;?/);
       ///^\s*\[\s*out\s*:\s*([^\]\s]+)/);
       if (out && out[1] != "xml")
         q = q.replace(
@@ -140,9 +140,9 @@ export default function autorepair(q, lng) {
           "$1xml$3/*fixed by auto repair*/"
         );
       // 2. fix print statements: non meta output, overpass geometries
-      const prints = q.match(/(\.([^;.]+?)\s+)?(\bout\b[^:;"\]]*;)/g) || [];
-      for (const print_i of prints) {
-        // eslint-disable-next-line prefer-const
+      var prints = q.match(/(\.([^;.]+?)\s+)?(\bout\b[^:;"\]]*;)/g) || [];
+      for (var print_i of prints) {
+        // eslint-disable-next-line prefer-var
         let [print, , out_set, out_statement] = print_i.match(
           /(\.([^;.]+?)\s+)?(\bout[^:;"\]]*;)/
         );
@@ -185,11 +185,11 @@ autorepair.detect.editors = (q, lng) => {
   // todo: test this
   // todo: move into autorepair "module" /// todo. done?
   q = q.replace(/{{.*?}}/g, "");
-  const err = {};
+  var err = {};
   if (lng == "xml") {
     try {
-      const xml = $.parseXML(`<x>${q}</x>`);
-      const out = $("osm-script", xml).attr("output");
+      var xml = $.parseXML(`<x>${q}</x>`);
+      var out = $("osm-script", xml).attr("output");
       if (out !== undefined && out !== "xml") err.output = true;
       $("print", xml).each((i, p) => {
         if ($(p).attr("mode") !== "meta") err.meta = true;
@@ -207,9 +207,9 @@ autorepair.detect.editors = (q, lng) => {
     // ignore comments
     q = q.replace(/\/\*[\s\S]*?\*\//g, "");
     q = q.replace(/\/\/[^\n]*/g, "");
-    const out = q.match(/\[\s*out\s*:\s*([^\]\s]+)\s*\]/);
+    var out = q.match(/\[\s*out\s*:\s*([^\]\s]+)\s*\]/);
     if (out && out[1] != "xml") err.output = true;
-    const prints = q.match(/out([^:;]*);/g);
+    var prints = q.match(/out([^:;]*);/g);
     $(prints).each((i, p) => {
       if (p.match(/\s(body|skel|ids|tags)/) || !p.match(/meta/))
         err.meta = true;
