@@ -5,7 +5,7 @@
  * @license WTFPL
  * @see github.com/MapBBCode/mapbbcode
  */
-const PopupIcon = L.Icon.extend({
+let PopupIcon = L.Icon.extend({
   options: {
     selectable: false,
     color: "white",
@@ -24,7 +24,7 @@ const PopupIcon = L.Icon.extend({
   },
 
   createIcon() {
-    const pdiv = document.createElement("div"),
+    let pdiv = document.createElement("div"),
       div = document.createElement("div"),
       width = this.options.width;
 
@@ -37,7 +37,7 @@ const PopupIcon = L.Icon.extend({
     div.style.margin = div.style.padding = "0";
     pdiv.style.margin = pdiv.style.padding = "0";
 
-    const contentDiv = document.createElement("div");
+    let contentDiv = document.createElement("div");
     contentDiv.innerHTML = this._text;
     contentDiv.style.textAlign = "center";
     contentDiv.style.lineHeight = "1.2";
@@ -54,19 +54,19 @@ const PopupIcon = L.Icon.extend({
       (!this._marker ||
         (!this._marker.options.clickable && !this._marker.options.draggable))
     ) {
-      const stop = L.DomEvent.stopPropagation;
+      let stop = L.DomEvent.stopPropagation;
       L.DomEvent.on(contentDiv, "click", stop)
         .on(contentDiv, "mousedown", stop)
         .on(contentDiv, "dblclick", stop);
     }
 
-    const tipcDiv = document.createElement("div");
+    let tipcDiv = document.createElement("div");
     tipcDiv.className = "leaflet-popup-tip-container";
     tipcDiv.style.width = "20px";
     tipcDiv.style.height = "11px";
     tipcDiv.style.padding = "0";
     tipcDiv.style.margin = "0 auto";
-    const tipDiv = document.createElement("div");
+    let tipDiv = document.createElement("div");
     tipDiv.className = "leaflet-popup-tip";
     tipDiv.style.width = tipDiv.style.height = "8px";
     tipDiv.style.marginTop = "-5px";
